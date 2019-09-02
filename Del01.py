@@ -22,6 +22,14 @@ import Leap
 #         y -= 1
 #     else:
 #         y += 1
+
+def Handle_Frame(frame):
+    hand = frame.hands[0]
+    print(hand)
+    fingers = hand.fingers
+    indexFingerList = fingers.finger_type(Leap.Finger.TYPE_INDEX)
+    indexFinger = indexFingerList[0]
+    print (indexFinger)
 #
 # pygameWindow = PYGAME_WINDOW()
 # print pygameWindow
@@ -29,6 +37,10 @@ import Leap
 controller = Leap.Controller()
 while True:
     frame = controller.frame()
+    handlist = frame.hands
+    for hand in handlist:
+        if hand > 0:
+            Handle_Frame(frame)
 #     pygameWindow.Prepare()
 #     pygameWindow.Draw_Black_Circle(x, y)
 #     Perturb_Circle_Position()
