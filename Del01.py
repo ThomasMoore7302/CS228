@@ -8,6 +8,12 @@ import Leap
 from pygameWindow import PYGAME_WINDOW
 import random
 
+x = 500
+y = 500
+xMin = 1000.0
+xMax = -1000.0
+yMin = 1000.0
+yMax = -1000.0
 
 # def Perturb_Circle_Position():
 #     global x, y
@@ -28,10 +34,30 @@ def Handle_Frame(frame):
     indexFinger = indexFingerList[0]
     distalPhalanx = indexFinger.bone(Leap.Bone.TYPE_DISTAL)
     tip = distalPhalanx.next_joint
-    print(tip)
-    global x, y
+    global x, y, xMin, xMax, yMin, yMax, pygameY, pygameX
     x = int(tip[0])
     y = int(tip[1])
+    if x < xMin:
+        xMin = x
+    if x > xMax:
+        xMax = x
+    if y < yMin:
+        yMin = y
+    if y > yMax:
+        yMax = y
+    print xMin , xMax, yMin, yMax
+
+# For this function I had hints given to me by Professor and used
+# https://stackoverflow.com/questions/929103/convert-a-number-range-to-another-range-maintaining-ratio/929107
+def Scale(param1, old_min, old_max, new_min, new_max):
+    scale = (((param1 - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
+
+    if old_min == old_max:
+        return 0
+    if new_min == new_max:
+        return 0
+
+    return scale
 
 pygameWindow = PYGAME_WINDOW()
 print pygameWindow
@@ -43,11 +69,13 @@ while True:
     for hand in handlist:
         if hand > 0:
             Handle_Frame(frame)
+            pygameX = Scale(x, 0, 200, 500, 800)
+            pygameY = Scale(y, 0, 300, 0, 500)
+            print pygameX, pygameY
+            x = pygameX
+            y = pygameY
     pygameWindow.Prepare()
     pygameWindow.Draw_Black_Circle(x, y)
 #     Perturb_Circle_Position()
     pygameWindow.Reveal()
-
-
-
 
