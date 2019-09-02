@@ -25,11 +25,12 @@ import Leap
 
 def Handle_Frame(frame):
     hand = frame.hands[0]
-    print(hand)
     fingers = hand.fingers
     indexFingerList = fingers.finger_type(Leap.Finger.TYPE_INDEX)
     indexFinger = indexFingerList[0]
-    print (indexFinger)
+    distalPhalanx = indexFinger.bone(Leap.Bone.TYPE_DISTAL)
+    tip = distalPhalanx.next_joint
+    print(tip)
 #
 # pygameWindow = PYGAME_WINDOW()
 # print pygameWindow
