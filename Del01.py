@@ -5,12 +5,10 @@ sys.path.insert(0, 'C:\Users\Thomas\Desktop\Leap_Motion_SDK_Windows_2.3.1\LeapDe
 sys.path.insert(0, 'C:\Users\Thomas\Desktop\Leap_Motion_SDK_Windows_2.3.1\LeapDeveloperKit_2.3.1+31549_win\LeapSDK/lib/x64')
 import Leap
 
-# from pygameWindow import PYGAME_WINDOW
-# import random
-#
-# x = 500
-# y = 500
-#
+from pygameWindow import PYGAME_WINDOW
+import random
+
+
 # def Perturb_Circle_Position():
 #     global x, y
 #     fourSidedDieRoll = random.randint(1, 4)
@@ -31,10 +29,13 @@ def Handle_Frame(frame):
     distalPhalanx = indexFinger.bone(Leap.Bone.TYPE_DISTAL)
     tip = distalPhalanx.next_joint
     print(tip)
-#
-# pygameWindow = PYGAME_WINDOW()
-# print pygameWindow
-#
+    global x, y
+    x = int(tip[0])
+    y = int(tip[1])
+
+pygameWindow = PYGAME_WINDOW()
+print pygameWindow
+
 controller = Leap.Controller()
 while True:
     frame = controller.frame()
@@ -42,11 +43,11 @@ while True:
     for hand in handlist:
         if hand > 0:
             Handle_Frame(frame)
-#     pygameWindow.Prepare()
-#     pygameWindow.Draw_Black_Circle(x, y)
+    pygameWindow.Prepare()
+    pygameWindow.Draw_Black_Circle(x, y)
 #     Perturb_Circle_Position()
-#     pygameWindow.Reveal()
-#
-#
-#
-#
+    pygameWindow.Reveal()
+
+
+
+
