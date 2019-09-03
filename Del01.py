@@ -45,7 +45,7 @@ def Handle_Frame(frame):
         yMin = y
     if y > yMax:
         yMax = y
-    print xMin , xMax, yMin, yMax
+
 
 # For this function I had hints given to me by Professor and used
 # https://stackoverflow.com/questions/929103/convert-a-number-range-to-another-range-maintaining-ratio/929107
@@ -60,7 +60,6 @@ def Scale(param1, old_min, old_max, new_min, new_max):
     return scale
 
 pygameWindow = PYGAME_WINDOW()
-print pygameWindow
 
 controller = Leap.Controller()
 while True:
@@ -70,12 +69,15 @@ while True:
         if hand > 0:
             Handle_Frame(frame)
             pygameX = Scale(x, 0, 200, 500, 800)
-            pygameY = Scale(y, 0, 300, 0, 500)
-            print pygameX, pygameY
+            pygameY = Scale(y, 0, 300, 1000, 500)
             x = pygameX
             y = pygameY
+            print x, y
     pygameWindow.Prepare()
+
     pygameWindow.Draw_Black_Circle(x, y)
 #     Perturb_Circle_Position()
     pygameWindow.Reveal()
+
+
 
