@@ -8,8 +8,8 @@ import numpy as np
 import pickle
 import pygame
 
-class DELIVERABLE:
-    def __init__(self, controller, pygameWindow, x,y,xMin, xMax, yMin, yMax, currentNumberOfHands, previousNumberOfHands, num):
+class RECORDER:
+    def __init__(self, controller, pygameWindow, x,y,xMin, xMax, yMin, yMax, currentNumberOfHands, previousNumberOfHands, num, numberOfGestures):
         self.controller = controller
         self.pygameWindow = pygameWindow
         self.x = x
@@ -21,13 +21,16 @@ class DELIVERABLE:
         self.currentNumberOfHands = currentNumberOfHands
         self.previousNumberOfHands = previousNumberOfHands
         self.num = num
-        self.gestureData = np.zeros((5, 4, 6), dtype='f')
+        self.numberOfGestures = numberOfGestures
+        self.gestureData = np.zeros((5, 4, 6,self.numberOfGestures), dtype='f')
+        self.gestureIndex = 0
+
 
     def Run_Forever(self):
-        DELIVERABLE.Run_Once(self)
+        RECORDER.Run_Once(self)
 
     def Run_Once(self):
-        DELIVERABLE.OS_Subdirectory(self)
+        RECORDER.OS_Subdirectory(self)
         while True:
             pygame.event.get()
             self.pygameWindow.Prepare()
@@ -36,11 +39,12 @@ class DELIVERABLE:
             handlist = frame.hands
             for hand in handlist:
                 if hand > 0:
-                    DELIVERABLE.Handle_Frame(self, frame)
+                    RECORDER.Handle_Frame(self, frame, self.currentNumberOfHands)
             self.previousNumberOfHands = self.currentNumberOfHands
             self.pygameWindow.Reveal()
 
-    def Handle_Frame(self, frame):
+    def Handle_Frame(self, frame, currentNumberofHands):
+        k = 99
         hand = frame.hands[0]
         handList = frame.hands
         nHands = len(handList)
@@ -52,36 +56,49 @@ class DELIVERABLE:
         length = len(fingers)
         for i in range(length):
             finger = fingers[i]
-            DELIVERABLE.Handle_finger(self,i, finger, self.currentNumberOfHands)
+            self.currentNumberofHands = currentNumberofHands
+            RECORDER.Handle_finger(self,i, finger, self.currentNumberOfHands)
         if self.Recording_Is_Ending():
             print(self.gestureData)
-            self.Save_Gesture()
-            self.num +=1
+            # self.Save_Gesture()
+            self.num += 1
+        if self.currentNumberOfHands == 2:
+            print('gesture' + str(self.gestureIndex) + ' stored.')
+            self.gestureIndex = self.gestureIndex + 1
+            if self.gestureIndex == self.numberOfGestures:
+                print self.gestureData[:,:,:,k]
+                self.Save_Gesture()
+                exit(0)
 
     def Handle_finger(self,i,finger, currentNumberOfHands):
         global b
         for b in range(4):
-            DELIVERABLE.Handle_bone(self,i, finger.bone(b), self.currentNumberOfHands,b )
+            self.currentNumberofHands = currentNumberOfHands
+            RECORDER.Handle_bone(self,i, finger.bone(b), self.currentNumberOfHands, b )
 
     def Handle_bone(self,i,bone, currentNumberOfHands,j):
+        self.currentNumberofHands = currentNumberOfHands
         base = bone.prev_joint
         tip = bone.next_joint
-        xBase, yBase = DELIVERABLE.Handle_Vector_From_Leap(self, base)
-        xTip, yTip = DELIVERABLE.Handle_Vector_From_Leap(self, tip)
+        xBase, yBase = RECORDER.Handle_Vector_From_Leap(self, base)
+        xTip, yTip = RECORDER.Handle_Vector_From_Leap(self, tip)
 
-        xBase = DELIVERABLE.Scale(self, xBase, self.xMin, self.xMax, self.yMin, self.yMax)
-        xTip = DELIVERABLE.Scale(self, xTip,self.xMin, self.xMax, self.yMin, self.yMax)
-        yBase = DELIVERABLE.Scale(self, yBase, self.xMin, self.xMax, self.yMin, self.yMax)
-        yTip = DELIVERABLE.Scale(self, yTip,self.xMin, self.xMax, self.yMin, self.yMax)
+        xBase = RECORDER.Scale(self, xBase, self.xMin, self.xMax, self.yMin, self.yMax)
+        xTip = RECORDER.Scale(self, xTip,self.xMin, self.xMax, self.yMin, self.yMax)
+        yBase = RECORDER.Scale(self, yBase, self.xMin, self.xMax, self.yMin, self.yMax)
+        yTip = RECORDER.Scale(self, yTip,self.xMin, self.xMax, self.yMin, self.yMax)
         self.pygameWindow.Draw_Line(xBase, yBase, xTip, yTip, b, self.currentNumberOfHands)
 
-        if self.Recording_Is_Ending() == True:
-            self.gestureData[i, j, 0] = base[0]
-            self.gestureData[i, j, 1] = base[1]
-            self.gestureData[i, j, 2] = base[2]
-            self.gestureData[i, j, 3] = tip[0]
-            self.gestureData[i, j, 4] = tip[1]
-            self.gestureData[i, j, 5] = tip[2]
+
+        if self.currentNumberOfHands == 2:
+            self.gestureData[i, j, 0,self.gestureIndex] = base[0]
+            self.gestureData[i, j, 1,self.gestureIndex] = base[1]
+            self.gestureData[i, j, 2,self.gestureIndex] = base[2]
+            self.gestureData[i, j, 3,self.gestureIndex] = tip[0]
+            self.gestureData[i, j, 4,self.gestureIndex] = tip[1]
+            self.gestureData[i, j, 5,self.gestureIndex] = tip[2]
+
+
 
     def Handle_Vector_From_Leap(self, v):
         return int(v[0]), int(v[2])

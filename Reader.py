@@ -6,7 +6,7 @@ import time
 
 class READER:
     def __init__(self):
-        # pickle_in = open('userData/gesture0.p', 'rb')
+        # pickle_in = open('userData/train9.dat', 'rb')
         # gestureData = pickle.load(pickle_in)
         # print gestureData
         path, dirs, files = next(os.walk('userData'))

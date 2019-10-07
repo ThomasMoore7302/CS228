@@ -6,6 +6,6 @@ import Leap
 from pygameWindow_Del03 import PYGAME_WINDOW
 
 
-deliverable = Recorder.DELIVERABLE(Leap.Controller(), PYGAME_WINDOW(), 500, 600, -100.0, 100.0, 0.0, 700.0, 0, 0, 0)
-Recorder.DELIVERABLE.Run_Forever(deliverable)
+recorder = Recorder.RECORDER(Leap.Controller(), PYGAME_WINDOW(), 500, 600, -100.0, 100.0, 0.0, 700.0, 0, 0, 0, 1000)
+Recorder.RECORDER.Run_Forever(recorder)
 
