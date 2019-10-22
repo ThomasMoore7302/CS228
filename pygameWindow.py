@@ -6,6 +6,10 @@ class PYGAME_WINDOW:
         pygame.init()
         self.screen = pygame.display.set_mode((constants.pygameWindowDepth,constants.pygameWindowWidth))
 
+    def Draw_Image(self, img, x, y):
+
+        self.screen.blit(img, (x, y))
+
     def Prepare(self):
         self.screen.fill((255, 255, 255))
 

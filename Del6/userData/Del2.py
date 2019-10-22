@@ -5,6 +5,7 @@ import Leap
 import pickle
 import numpy as np
 from pygameWindow import PYGAME_WINDOW
+import pygame
 
 
 clf = pickle.load(open("../../userData/classifer.p", 'rb'))
@@ -19,27 +20,46 @@ yMin = 1000.0
 yMax = -1000.0
 
 
-def Handle_Frame(frame, k):
+def Handle_Frame(frame):
+    global k, testData
+    k = 0
     hand = frame.hands[0]
     fingers = hand.fingers
     length = len(fingers)
     for i in range(length):
         finger = fingers[i]
-        Handle_finger(finger, k)
-    print testData
+        Handle_finger(finger)
+
+    # print testData
+    testData = CenterData(testData)
+    predictedClass = clf.Predict(testData)
+    print predictedClass
 
 
-def Handle_finger(finger, k):
+def CenterData(X):
+    allXCoordinates = X[0,::3]
+    meanValue = allXCoordinates.mean()
+    X[0,::3] = allXCoordinates - meanValue
+    allYCoordinates = X[0,1::3]
+    meanValue = allYCoordinates.mean()
+    X[0,1::3] = allYCoordinates - meanValue
+    allZCoordinates = X[0,2::3]
+    meanValue = allZCoordinates.mean()
+    X[0,2::3] = allZCoordinates - meanValue
+    return X
+
+
+
+def Handle_finger(finger):
     global b
     for b in range(4):
-        Handle_bone(finger.bone(b), k)
+        Handle_bone(finger.bone(b))
 
 
-def Handle_bone(bone, k):
-    global testData
+def Handle_bone(bone):
     base = bone.prev_joint
     tip = bone.next_joint
-    global xBase,xTip, yBase, yTip
+    global xBase,xTip, yBase, yTip, testData, k
     xBase, yBase = Handle_Vector_From_Leap(base)
     xTip, yTip = Handle_Vector_From_Leap(tip)
     xBase = Scale(xBase, -100, 100, 0, 700)
@@ -47,6 +67,7 @@ def Handle_bone(bone, k):
     yBase = Scale(yBase, -100, 100, 0, 700)
     yTip = Scale(yTip, -100, 100, 0, 700)
 
+    pygameWindow.Draw_Black_Line(xBase, yBase, xTip, yTip, b)
     if ((b == 0) or (b == 3)):
 
         testData[0,k] = tip[0]
@@ -54,7 +75,7 @@ def Handle_bone(bone, k):
         testData[0,k + 2] = tip[2]
         k = k + 3
 
-    pygameWindow.Draw_Black_Line(xBase, yBase, xTip, yTip, b)
+
 
 
 def Handle_Vector_From_Leap(v):
@@ -76,15 +97,15 @@ pygameWindow = PYGAME_WINDOW()
 
 controller = Leap.Controller()
 while True:
-
+    pygame.event.get()
     pygameWindow.Prepare()
     frame = controller.frame()
 
     handlist = frame.hands
     for hand in handlist:
         if hand > 0:
-            k = 0
-            Handle_Frame(frame, k)
+
+            Handle_Frame(frame)
     pygameWindow.Reveal()
 
 
