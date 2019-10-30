@@ -10,6 +10,12 @@ class PYGAME_WINDOW:
 
         self.screen.blit(img, (x, y))
 
+    # def Draw_Zero(self):
+    #     zero = pygame.image.load('zero.jpg')
+    #     aslzero = pygame.image.load('aslzero.jpg')
+    #     self.Draw_Image(zero, 500, 0)
+    #     self.Draw_Image(aslzero, 500, 500)
+
     def Prepare(self):
         self.screen.fill((255, 255, 255))
 
